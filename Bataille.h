@@ -10,7 +10,7 @@ class Bataille
 	void play();
 	void place();
 	void turn();
-	int win();
+	bool win();
 	void print();
 	
 	private:
