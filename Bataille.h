@@ -8,6 +8,7 @@ class Bataille
 	Bataille();
 	~Bataille();
 	void play();
+	void place();
 	void turn();
 	int win();
 	void print();
