@@ -21,4 +21,13 @@ void Bataille::print()
 		cout << endl ;
 	}
 }
-	 
+
+void Bataille::play()
+{
+	while(!win())
+	{
+		print();
+		turn();
+	}
+	cout << "You win" << endl;
+}	 
