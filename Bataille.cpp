@@ -57,3 +57,17 @@ void Bataille::turn()
 	}
 }
 
+bool Bataille::win()
+{
+	for (int i=0 i<=9 i++)
+	{
+		for (int j=0 j<=9 j++)
+		{
+			if (map [i][j]==2)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
