@@ -1,3 +1,5 @@
+#include <SDL.h>
+#include <SDL_image.h>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -9,7 +11,7 @@ Bataille::Bataille()
 {
 	srand(time(0));
 	
-	playerTurn = rand()%2 + 1;
+	playerTurn = 1;
 	
 	for(int i=0; i<=9; i++)
 	{
@@ -39,14 +41,25 @@ void Bataille::play()
 	playerTurn = win();
 	print();
 	
+	SDL_Surface *ecran = NULL, *victoire1 = NULL, *victoire2 = NULL;
+	ecran = SDL_SetVideoMode(875,875,16,SDL_HWSURFACE|SDL_DOUBLEBUF);
+	victoire1 = IMG_Load("win1.png");
+	victoire2 = IMG_Load("win2.png");
+	SDL_Rect pos;
+	pos.x = 0;
+	pos.y = 0;
+	
 	if(playerTurn == 1)
 	{
-		cout << "Player 1 wins" << endl;
+		SDL_BlitSurface(victoire1, NULL, ecran, &pos);
+		SDL_Flip(ecran);
 	}
 	else
 	{
-		cout << "Player 2 wins" << endl;
+		SDL_BlitSurface(victoire2, NULL, ecran, &pos);
+		SDL_Flip(ecran);
 	}
+	SDL_Delay(2000);
 }
 
 void Bataille::place()
@@ -362,45 +375,64 @@ void Bataille::place()
 
 void Bataille::turn()
 {
-	cout << "You are the player " << playerTurn << endl;
+	bool continuer = true;
+	SDL_Event event;
+	int x,y;
 	
-	int x=11 ;
-	while( x<1||x>10 )
-	{	
-		cout << "Sur quelle ligne voulez vous jouer? [1;10]" << endl;
-		cin >> x;
-	}
-	
-	int y=11;
-	while( y<1||y>10 )
+	while(continuer)
 	{
-		cout << "Sur quelle colonne voulez vous jouer? [1;10]" << endl ;
-		cin >> y;
+		SDL_WaitEvent(&event);
+		
+		switch(event.type)
+		{
+			case SDL_QUIT:
+				exit(0);
+			break;
+			
+			case SDL_MOUSEBUTTONDOWN:
+				x = event.button.x / 88;
+				y = event.button.y / 87;
+				continuer = false;
+			break;
+			
+			case SDL_KEYDOWN:
+				if(event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					exit(0);
+				}
+			break;
+		}
 	}
+	
+	
 	if(playerTurn == 1)
 	{
-		if (map2[x-1][y-1]==0)
+		if (map2[x][y]==0)
 		{
-			map2[x-1][y-1]=2;
+			map2[x][y]=2;
 		}
-		if (map2[x-1][y-1]==1)
+		if (map2[x][y]==1)
 		{
-			map2[x-1][y-1]=3;
+			map2[x][y]=3;
 		}
 		
+		print();
+		SDL_Delay(500);
 		playerTurn = 2;
 	}
 	else
 	{
-		if (map[x-1][y-1]==0)
+		if (map[x][y]==0)
 		{
-			map[x-1][y-1]=2;
+			map[x][y]=2;
 		}
-		if (map[x-1][y-1]==1)
+		if (map[x][y]==1)
 		{
-			map[x-1][y-1]=3;
+			map[x][y]=3;
 		}
 		
+		print();
+		SDL_Delay(500);
 		playerTurn = 1;
 	}
 }
@@ -447,22 +479,53 @@ int Bataille::win()
 
 void Bataille::print()
 {
+	SDL_Surface *ecran = NULL,*mapS = NULL, *eclat = NULL, *bateau = NULL;
+	ecran = SDL_SetVideoMode(875,874,16,SDL_HWSURFACE|SDL_DOUBLEBUF);
+	mapS = IMG_Load("map.png");
+	
+	eclat = IMG_Load("eclat.png");
+	
+	bateau = IMG_Load("bateau.png");
+	SDL_Rect mapPos, eclatPos, bateauPos;
+	mapPos.x = 0;
+	mapPos.y = 0;
+	SDL_BlitSurface(mapS,NULL,ecran,&mapPos);
+	
 	if(playerTurn == 1)
 	{
 		for(int i=0; i<=9; i++)
 		{		
 			for(int j=0; j<=9; j++)
 			{
-				if(map2[i][j] == 0)
-					cout << '.';
-				else if(map2[i][j] == 1)
-					cout << '.';
-				else if(map2[i][j] == 2)
-					cout << '/';
+				if(map2[i][j] == 2)
+				{
+					eclatPos.x = (int)(87.5*i);
+					eclatPos.y = (int)(87.5*j);
+					if(i%2==1)
+					{
+						eclatPos.x++;
+					}
+					if(j%2==1)
+					{
+						eclatPos.y++;
+					}
+					SDL_BlitSurface(eclat,NULL,ecran,&eclatPos);
+				}
 				else if(map2[i][j] == 3)
-					cout << '@';
+				{
+					bateauPos.x = (int)(87.5*i);
+					bateauPos.y = (int)(87.5*j);
+					if(i%2==1)
+					{
+						bateauPos.x++;
+					}
+					if(j%2==1)
+					{
+						bateauPos.y++;
+					}
+					SDL_BlitSurface(bateau,NULL,ecran,&bateauPos);
+				}
 			}
-			cout << endl;
 		}
 	}
 	else
@@ -471,16 +534,37 @@ void Bataille::print()
 		{		
 			for(int j=0; j<=9; j++)
 			{
-				if(map[i][j] == 0)
-					cout << '.';
-				else if(map[i][j] == 1)
-					cout << '.';
-				else if(map[i][j] == 2)
-					cout << '/';
+				if(map[i][j] == 2)
+				{
+					eclatPos.x = (int)(87.5*i);
+					eclatPos.y = (int)(87.5*j);
+					if(i%2==1)
+					{
+						eclatPos.x++;
+					}
+					if(j%2==1)
+					{
+						bateauPos.y++;
+					}
+					SDL_BlitSurface(eclat,NULL,ecran,&eclatPos);
+				}
 				else if(map[i][j] == 3)
-					cout << '@';
+				{
+					bateauPos.x = (int)(87.5*i);
+					bateauPos.y = (int)(87.5*j);
+					if(i%2==1)
+					{
+						bateauPos.x++;
+					}
+					if(j%2==1)
+					{
+						bateauPos.y++;
+					}
+					SDL_BlitSurface(bateau,NULL,ecran,&bateauPos);
+				}
 			}
-			cout << endl;
 		}
 	}
+	
+	SDL_Flip(ecran);
 }

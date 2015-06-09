@@ -10,13 +10,14 @@ class Bataille
 	void play();
 	void place();
 	void turn();
-	bool win();
+	int win();
 	void print();
 	
 	private:
 	
 	int playerTurn;
 	int map[10][10];
+	int map2[10][10];
 };
 
 #endif
