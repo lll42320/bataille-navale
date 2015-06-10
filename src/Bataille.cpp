@@ -445,7 +445,7 @@ int Bataille::win()
 	{
 		for (int j=0; j<=9; j++)
 		{
-			if (map [i][j]==1)
+			if (map2 [i][j]==1)
 			{
 				w1 = false;
 			}
@@ -456,7 +456,7 @@ int Bataille::win()
 	{
 		for (int j=0; j<=9; j++)
 		{
-			if (map2 [i][j]==1)
+			if (map [i][j]==1)
 			{
 				w2 = false;
 			}
