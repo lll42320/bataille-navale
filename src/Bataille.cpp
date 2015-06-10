@@ -49,7 +49,7 @@ void Bataille::play()
 	pos.x = 0;
 	pos.y = 0;
 	
-	if(playerTurn == 1)
+	if(win() == 1)
 	{
 		SDL_BlitSurface(victoire1, NULL, ecran, &pos);
 		SDL_Flip(ecran);
